@@ -25,6 +25,20 @@ public class TileMap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 input = Input.mousePosition;
+            //得到由屏幕指向地图的射线
+            Ray ray = Camera.main.ScreenPointToRay(input);
+            //由正确的方向得到屏幕中tile所在的位置
+            Vector3Int vector = tilemap.WorldToCell(ray.GetPoint(-ray.origin.y / ray.direction.y));
+            //对该位置进行点击测试
+            if (tilemap.HasTile(vector))
+            {
+                print(input);
+                tilemap.SetTile(vector, arrTiles[TilesName[2]]);
+            }
+        }   
     }
 
     void InitData()
@@ -33,6 +47,7 @@ public class TileMap : MonoBehaviour
         {//根据地面类型TileType初始化tilemap
             for (int j = 0; j < levelW; j++)
             {
+                //tilemap.SetColor(new Vector3Int(j, i, 0), Color.red);
                 tilemap.SetTile(new Vector3Int(j, i, 0), arrTiles[TileType[i * levelW + j]]);
             }
         }
@@ -47,7 +62,7 @@ public class TileMap : MonoBehaviour
         {
             for (int j = 0; j < levelW; j++)
             {
-                TileType[i * levelW + j] = TilesName[Random.Range(0, TilesName.Count)];
+                TileType[i * levelW + j] = TilesName[Random.Range(1, 1)];
             }
         }
     }
@@ -78,7 +93,7 @@ public class TileMap : MonoBehaviour
 
     void AddTile(string labelName, string spritePath)
     {
-        Tile tile = ScriptableObject.CreateInstance<Tile>();//创建Tile，注意，要使用这种方式
+        Tile tile = ScriptableObject.CreateInstance<Tile>();//创建Tile
         Sprite tmp = Resources.Load<Sprite>(spritePath);
         tile.sprite = tmp;
         arrTiles.Add(labelName, tile);
